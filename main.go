@@ -4,8 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"./xmlib/config"
-	"./xmlib/xmlog"
+	"github.com/Rogerzhao/xmlib/config"
+	"github.com/Rogerzhao/xmlib/xmlog"
 )
 
 var (

@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-	"./xmlib/xmlog"
+	"github.com/Rogerzhao/xmlib/xmlog"
 )
 
 type DirScanner struct {

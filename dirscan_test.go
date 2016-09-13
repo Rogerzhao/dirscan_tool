@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"strings"
 	"testing"
-	"xmlib/xmlog"
+	"github.com/Rogerzhao/xmlib/xmlog"
 )
 
 func Test_filterStragety(t *testing.T) {
