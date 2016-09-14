@@ -72,6 +72,15 @@ func (d *DirScanner) ScanFileInfo() {
 	d.scanDirWithFilter()
 	var count int64
 	count = 0
+
+	// sync
+	go func() {
+		for i := 0; i < len(d.fileInfos); i++ {
+			<-syncChan
+		}
+		close(outputChan)
+	}()
+
 	for _, fileInfo := range d.fileInfos {
 		go fileInfo.genSha1()
 		count++
@@ -79,10 +88,7 @@ func (d *DirScanner) ScanFileInfo() {
 	}
 
 	// sync
-	for i := int64(0); i < count; i++ {
-		<-syncChan
-	}
-	close(outputChan)
+
 	xmlog.Infof("end scan file info ,get %d files", count)
 }
 
