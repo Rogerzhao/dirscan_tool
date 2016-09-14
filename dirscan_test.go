@@ -44,10 +44,12 @@ func Test_sha1Result(t *testing.T) {
 	go xmlog.WatchErrors("test", "log")
 	go xmlog.WatchPanic()
 
+
 	defer xmlog.Close()
 	dirFilter := "*e?[!a-z]*"
 	fileFilter := "*e?[!a-z]*"
 	syncChan = make(chan int, 100) //
+	concurrentChan = make(chan int, 10)
 	p, _ := NewDirScanner("/tmp/api_tantan", dirFilter, fileFilter, "/tmp/sha1.output")
 	go p.fileStore()
 	p.ScanFileInfo()

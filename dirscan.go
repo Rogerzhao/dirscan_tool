@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/Rogerzhao/xmlib/xmlog"
 	"io"
-	"io/ioutil"
 	"os"
+	"bufio"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -31,14 +31,30 @@ type FileInfo struct {
 }
 
 func (f *FileInfo) genSha1() (err error) {
-	buf, err := ioutil.ReadFile(f.fileName)
+	buf := make([]byte,1024)
+	file, err := os.Open(f.fileName)
 	if err != nil {
+	    xmlog.ERROR(err)
+	    return
+	}
+	fileReader := bufio.NewReader(file)
+	h := sha1.New()
+	for {
+	    n, err1 := fileReader.Read(buf)
+	    if err1 == io.EOF {
+		if n > 0 {
+		    io.WriteString(h,string(buf[:n]))
+		}
+		break
+	    }
+	    if err1 != nil {
+		err = err1
 		xmlog.ERROR(err)
 		return
+	    }
+	    io.WriteString(h,string(buf[:n]))
 	}
 
-	h := sha1.New()
-	io.WriteString(h, string(buf))
 	f.sha1 = fmt.Sprintf("%x", h.Sum(nil))
 	output := fmt.Sprintf("%s,%s,%d", f.fileName, f.sha1, f.size)
 	outputChan <- output
