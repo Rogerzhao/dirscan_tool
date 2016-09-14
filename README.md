@@ -18,9 +18,9 @@
   logdir=log  #日志文件所在目录，请先建立好这个目录
   prefix=dir_scan #日志文件的前缀
 
-  [path]  
+  [path]
   walkPath=/tmp/api_tantan #需扫描的目录
-  filterDir=ratelimit.[v]? #目录的过滤条件，支持*, ? [] !等通配符
+  filterDir=ratelimit.[a-d]? #目录的过滤条件，支持*, ? [] !等通配符
   filterFile=*.go          # 文件名过滤条件
   concurrentNumber=10      # 并发计算sha1的文件数量
   resultFile=/tmp/sha1.out # 扫描结果存放的文件名
