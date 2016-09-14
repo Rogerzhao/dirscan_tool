@@ -1,7 +1,7 @@
 # dirscan_tool
 实现了一个扫描指定目录，生成目录中文件sha1值的小工具。支持过滤掉特定的目录，或者过滤特定的文件。
-文件的输出格式
-
+文件的输出格式 文件名，sha1值，文件大小，三者用逗号隔开
+ /tmp/api_tantan/bin/main,84be8485aecebc9631dcdec08139b17fd3ee865d,9795808
 使用方法：
   准备工作，设置$GOBIN=$GOPATH/bin
   export GOBIN=$GOPATH/bin
@@ -15,15 +15,22 @@
   
 配置文件说明：dirscan.conf
   [log_conf]
-  logdir=log  #日志文件所在目录，请先建立好这个目录
-  prefix=dir_scan #日志文件的前缀
+  #日志文件所在目录，请先建立好这个目录
+  logdir=log
+  #日志文件的前缀
+  prefix=dir_scan 
 
   [path]
-  walkPath=/tmp/api_tantan #需扫描的目录
-  filterDir=ratelimit.[a-d]? #目录的过滤条件，支持*, ? [] !等通配符
-  filterFile=*.go          # 文件名过滤条件
-  concurrentNumber=10      # 并发计算sha1的文件数量
-  resultFile=/tmp/sha1.out # 扫描结果存放的文件名
+  #需扫描的目录
+  walkPath=/tmp/api_tantan
+  #目录的过滤条件，支持*, ? [] !等通配符
+  filterDir=ratelimit.[a-d]?
+  # 文件名过滤条件
+  filterFile=*.go
+  # 并发计算sha1的文件数量
+  concurrentNumber=10
+  #扫描结果存放的文件名
+  resultFile=/tmp/sha1.out  
   
 关于测试，可以到src/github.com/Rogerzhao/dirscan_tool源码目录下运行 
 go test
