@@ -37,6 +37,7 @@ func (f *FileInfo) genSha1() (err error) {
 	    xmlog.ERROR(err)
 	    return
 	}
+	defer file.Close()
 	fileReader := bufio.NewReader(file)
 	h := sha1.New()
 	for {
