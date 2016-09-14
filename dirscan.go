@@ -3,13 +3,13 @@ package main
 import (
 	"crypto/sha1"
 	"fmt"
+	"github.com/Rogerzhao/xmlib/xmlog"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
-	"github.com/Rogerzhao/xmlib/xmlog"
 )
 
 type DirScanner struct {
@@ -43,6 +43,8 @@ func (f *FileInfo) genSha1() (err error) {
 	output := fmt.Sprintf("%s,%s,%d", f.fileName, f.sha1, f.size)
 	outputChan <- output
 	syncChan <- 1
+
+	concurrentChan <- 1
 	return
 }
 
@@ -73,6 +75,7 @@ func (d *DirScanner) ScanFileInfo() {
 	for _, fileInfo := range d.fileInfos {
 		go fileInfo.genSha1()
 		count++
+		<-concurrentChan
 	}
 
 	// sync
@@ -135,7 +138,7 @@ func (d *DirScanner) visit(path string, f os.FileInfo, err1 error) (err error) {
 
 	// check fileName
 	if d.fileRegexp.MatchString(fileName) {
-		xmlog.Infof("filename  %s match %s", d.fileFilter)
+		xmlog.Infof("filename  %s match %s", fileName, d.fileFilter)
 		d.failFilterFiles = append(d.failFilterFiles, path)
 		return
 	}

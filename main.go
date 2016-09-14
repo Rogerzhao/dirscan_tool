@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
 	"github.com/Rogerzhao/xmlib/config"
 	"github.com/Rogerzhao/xmlib/xmlog"
+	"os"
 )
 
 var (
@@ -17,7 +17,7 @@ var (
 
 	// for sha1 scan
 	outputChan     = make(chan string, 100)
-	syncChan       chan int
+	syncChan       = make(chan int, 100)
 	quitChan       = make(chan int)
 	walkPath       string
 	filterDirName  string
@@ -26,6 +26,7 @@ var (
 
 	// concurrentFileNumber
 	concurrentNumber int64
+	concurrentChan   chan int
 )
 
 func main() {
@@ -40,7 +41,7 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	syncChan = make(chan int, concurrentNumber)
+	concurrentChan = make(chan int, concurrentNumber)
 
 	defer func() {
 		xmlog.Close()
