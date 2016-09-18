@@ -6,6 +6,7 @@ import (
 	"github.com/Rogerzhao/xmlib/config"
 	"github.com/Rogerzhao/xmlib/xmlog"
 	"os"
+	"strings"
 )
 
 var (
@@ -78,6 +79,15 @@ func Init(fileName string) (err error) {
 	if err != nil {
 		return
 	}
+	// currentFile
+	if strings.Contains(walkPath, `~`) {
+		home := os.Getenv("HOME")
+		if len(home) > 0 {
+			walkPath = strings.Replace(walkPath, `~`, home, -1)
+		}
+	}
+	fmt.Println(walkPath)
+
 	filterDirName, err = gConf.GetSetting("path", "filterDir")
 	if err != nil {
 		return
