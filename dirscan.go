@@ -1,12 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"crypto/sha1"
 	"fmt"
 	"github.com/Rogerzhao/xmlib/xmlog"
 	"io"
 	"os"
-	"bufio"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -31,37 +31,39 @@ type FileInfo struct {
 }
 
 func (f *FileInfo) genSha1() (err error) {
-	buf := make([]byte,1024)
+
+	defer func() {
+		syncChan <- 1
+		concurrentChan <- 1
+	}()
+	buf := make([]byte, 1024)
 	file, err := os.Open(f.fileName)
 	if err != nil {
-	    xmlog.ERROR(err)
-	    return
+		xmlog.ERROR(err)
+		return
 	}
 	defer file.Close()
 	fileReader := bufio.NewReader(file)
 	h := sha1.New()
 	for {
-	    n, err1 := fileReader.Read(buf)
-	    if err1 == io.EOF {
-		if n > 0 {
-		    io.WriteString(h,string(buf[:n]))
+		n, err1 := fileReader.Read(buf)
+		if err1 == io.EOF {
+			if n > 0 {
+				io.WriteString(h, string(buf[:n]))
+			}
+			break
 		}
-		break
-	    }
-	    if err1 != nil {
-		err = err1
-		xmlog.ERROR(err)
-		return
-	    }
-	    io.WriteString(h,string(buf[:n]))
+		if err1 != nil {
+			err = err1
+			xmlog.ERROR(err)
+			return
+		}
+		io.WriteString(h, string(buf[:n]))
 	}
 
 	f.sha1 = fmt.Sprintf("%x", h.Sum(nil))
 	output := fmt.Sprintf("%s,%s,%d", f.fileName, f.sha1, f.size)
 	outputChan <- output
-	syncChan <- 1
-
-	concurrentChan <- 1
 	return
 }
 
@@ -182,7 +184,9 @@ func (d *DirScanner) fileStore() (err error) {
 		return
 	}
 	defer file.Close()
+	lineNo := 0
 	for line := range outputChan {
+		lineNo++
 		_, err = file.WriteString(line + "\n")
 		if err != nil {
 			xmlog.ERROR(err)
@@ -190,6 +194,7 @@ func (d *DirScanner) fileStore() (err error) {
 		}
 
 	}
+	xmlog.Infof("gen sha1 success %d files", lineNo)
 	quitChan <- 1
 	return
 
